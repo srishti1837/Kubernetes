@@ -48,14 +48,20 @@ pipeline {
                 script {
                     bat """
                     set KUBECONFIG=C:\\ProgramData\\Jenkins\\.jenkins\\kubeconfig
-                    kubectl config view
+
+                    echo Checking Kubernetes connection...
                     kubectl get nodes
+
+                    echo Updating deployment...
                     kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%DOCKER_IMAGE%:%DOCKER_TAG% -n %KUBE_NAMESPACE%
+
+                    echo Waiting for rollout...
                     kubectl rollout status deployment/%DEPLOYMENT_NAME% -n %KUBE_NAMESPACE%
                     """
                 }
             }
         }
+    }
 
     post {
         success {
