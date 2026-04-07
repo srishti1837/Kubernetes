@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "your-dockerhub-username/backend"
+        DOCKER_IMAGE = "srishti3718/backend"
         DOCKER_TAG = "latest"
         KUBE_NAMESPACE = "multitier-app"
         DEPLOYMENT_NAME = "backend"
@@ -13,7 +13,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-username/your-repo.git'
+                git branch: 'main', url: 'https://github.com/srishti1837/Kubernetes.git'
             }
         }
 
