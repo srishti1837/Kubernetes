@@ -47,13 +47,15 @@ pipeline {
             steps {
                 script {
                     bat """
+                    set KUBECONFIG=C:\\ProgramData\\Jenkins\\.jenkins\\kubeconfig
+                    kubectl config view
+                    kubectl get nodes
                     kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%DOCKER_IMAGE%:%DOCKER_TAG% -n %KUBE_NAMESPACE%
                     kubectl rollout status deployment/%DEPLOYMENT_NAME% -n %KUBE_NAMESPACE%
                     """
                 }
             }
         }
-    }
 
     post {
         success {
