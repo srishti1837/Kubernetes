@@ -20,19 +20,17 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
+                    bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ./backend"
                 }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                        bat """
-                        echo $PASS | docker login -u $USER --password-stdin
-                        """
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    bat """
+                    echo %PASS% | docker login -u %USER% --password-stdin
+                    """
                 }
             }
         }
@@ -40,7 +38,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat "docker push $DOCKER_IMAGE:$DOCKER_TAG"
+                    bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
                 }
             }
         }
@@ -49,11 +47,8 @@ pipeline {
             steps {
                 script {
                     bat """
-                    kubectl set image deployment/$DEPLOYMENT_NAME \
-                    $CONTAINER_NAME=$DOCKER_IMAGE:$DOCKER_TAG \
-                    -n $KUBE_NAMESPACE
-
-                    kubectl rollout status deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+                    kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%DOCKER_IMAGE%:%DOCKER_TAG% -n %KUBE_NAMESPACE%
+                    kubectl rollout status deployment/%DEPLOYMENT_NAME% -n %KUBE_NAMESPACE%
                     """
                 }
             }
