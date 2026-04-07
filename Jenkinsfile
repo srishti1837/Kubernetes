@@ -20,7 +20,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
+                    bat "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
                 }
             }
         }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                        sh """
+                        bat """
                         echo $PASS | docker login -u $USER --password-stdin
                         """
                     }
@@ -40,7 +40,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker push $DOCKER_IMAGE:$DOCKER_TAG"
+                    bat "docker push $DOCKER_IMAGE:$DOCKER_TAG"
                 }
             }
         }
@@ -48,7 +48,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh """
+                    bat """
                     kubectl set image deployment/$DEPLOYMENT_NAME \
                     $CONTAINER_NAME=$DOCKER_IMAGE:$DOCKER_TAG \
                     -n $KUBE_NAMESPACE
